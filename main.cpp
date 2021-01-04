@@ -12,17 +12,16 @@ using namespace std;
 // 3) Определить время сортировки
 
 int main() {
-    const int Size = 15;
-    int arr[Size] = {5, 8, 21, 7, 3, 5, 17, 4, 9, 12, 8, 7, 11, 8, 12};
+    const int Size = 100000;
+    int arr[Size] ;
+//    = {21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}
 
-    cout << "Изначальный массив: ";
     for (int i = 0; i < Size; ++i) {
-        cout << arr[i] << " ";
+        arr[i] = 1+ rand() % 99;
     }
 
-    cout << endl;
-
     TwoWayInsert(arr, Size);
+    quickSortIterative(arr, Size);
 
     return 0;
 }

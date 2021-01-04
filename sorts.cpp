@@ -1,5 +1,7 @@
 #include <iostream>
+#include <time.h>
 #include "sorts.h"
+
 using namespace std;
 
 template <typename Type>
@@ -14,13 +16,15 @@ void TwoWayInsert(Type* getArr, int s) {
     Type tmp;
 
     for (int i = 0; i < Size; ++i) {
-        outArr[i] = 0;
+        outArr[i] = -1;
     }
 
+    clock_t start = clock();
     outArr[mid] = getArr[0];
     for (int i = 1, j; i < s; i++) {
         tmp = getArr[i];
         j = mid;
+        comparisons++;
         if (tmp > outArr[j]) {
             while (tmp > outArr[j] && j < right + 1) {
                 j++;
@@ -66,30 +70,83 @@ void TwoWayInsert(Type* getArr, int s) {
             }
         }
     }
+    clock_t end = clock();
 
     cout << endl;
     cout << "ДВУПУТЕВЫЕ ВСТАВКИ";
 
     cout << endl;
-    cout << "Число сравнений: " << comparisons - 1 << endl;
-    cout << "Число обменов: " << permutations - 1 << endl;
+    cout << "Число сравнений: " << comparisons << endl;
+    cout << "Число обменов: " << permutations << endl;
+    cout << "Время сортировки: " << (double)(end - start) / CLOCKS_PER_SEC << " секунд" << endl;
+
+    for (int i = left; i < right; ++i) {
+        if (outArr[i] > outArr[i+1]) { cout << "Error sort!"; }
+    }
 }
 
-static const int M = 10;
-template <class Item>
-void quicksort(Item a[], int l, int r)
-{
-    if (r-1 <= M) return;
-    exch(a[(l+r)/2], a[r-1]);
-    comexch(a[l], a[r-1]);
-    comexch(a[l], a[r]);
-    comexch(a[r-1], a[r]);
-    int i = partition(a, l+1, r-1);
-    quicksort(a,l, i-1);
-    quicksort(a, i+1, r);
+template <typename Type>
+void swap(Type* a, Type* b) {
+    Type t = *a;
+    *a = *b;
+    *b = t;
 }
 
-template <class Item>
-void hybridsort(Item a[], int l, int r)
-{ quicksort(a, l, r); insertion(a, l, r); }
+template <typename Type>
+void quickSortIterative(Type* arr, int s) {
+    int l = 0;
+    int h = s - 1;
+    Type stack[h - l + 1];
+    int comparisons = 0;  // сравнения
+    int permutations = 0;  // перестановки
 
+    int top = -1;
+
+    stack[++top] = l;
+    stack[++top] = h;
+
+    clock_t start = clock();
+    while (top >= 0) {
+        h = stack[top--];
+        l = stack[top--];
+
+//        partition(arr, l, h, comparisons, permutations);
+        int x = arr[h];
+        int i = (l - 1);
+
+        for (int j = l; j <= h - 1; j++) {
+            comparisons++;
+            if (arr[j] <= x) {
+                permutations++;
+                i++;
+                swap(&arr[i], &arr[j]);
+            }
+        }
+        permutations++;
+        swap(&arr[i + 1], &arr[h]);
+        int p = i+1;
+
+        if (p - 1 > l) {
+            stack[++top] = l;
+            stack[++top] = p - 1;
+        }
+
+        if (p + 1 < h) {
+            stack[++top] = p + 1;
+            stack[++top] = h;
+        }
+    }
+    clock_t end = clock();
+
+    cout << endl;
+    cout << "БЫСТРАЯ СОРТИРОВКА";
+
+    cout << endl;
+    cout << "Число сравнений: " << comparisons << endl;
+    cout << "Число обменов: " << permutations << endl;
+    cout << "Время сортировки: " << (double)(end - start) / CLOCKS_PER_SEC << " секунд" << endl;
+
+    for (int i = 0; i < s-1; ++i) {
+        if (arr[i] > arr[i+1]) { cout << "Error sort!"; }
+    }
+}
